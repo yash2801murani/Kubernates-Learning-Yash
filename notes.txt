@@ -19,12 +19,12 @@ so can we need to add template pod in Replicaset yaml?? please note we have alre
 Ans : Yes.... Definately required bcz once pod get failed Replicaset requires pod template to initiate the new pod. 
 
 
----------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 
 kubectl scale --replicas=6  Replicaset/replicasetname
 
 
----------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 
 Deployments
 
@@ -43,7 +43,7 @@ kubectl rollout history deployment/nginx-deploy
 🔹 Rollback to Previous Version
 kubectl rollout undo deployment/nginx-deploy
 
----------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------
 
 
 Services 
@@ -134,6 +134,127 @@ Targetport : port of the container where service is running
 if i create node port service for nginx where pods are in 3 multiple worker node 
 
 means 3 worker node ip should open same nodeport port and then using any ip of worker node you can access your resource using the same nodeport number. 
+
+
+
+
+Cluster IP
+
+Internal communication between pods and vm in cluster
+not for exposing out side the cluster
+
+eg communicating between frontend and backend. 
+
+allocate single ip called ClusterIP
+
+
+Load Balancer. 
+
+Focus on the frontend pods 
+
+LB Service -> Pod1(Node1)
+           -> Pod2(Node2)
+           -> Pod3(Node3)
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+
+Namespace :
+
+Logical devide of k8s cluster
+
+Kubernetes Namespace — Simple Notes
+
+A namespace is a way to divide a Kubernetes cluster into smaller logical groups.
+
+It works like separate folders inside the same cluster.
+
+Helps in organizing resources and avoiding name conflicts.
+
+Used to separate environments like dev, test, prod.
+
+You can set resource limits per namespace.
+
+You can control who can access what using RBAC for each namespace.
+
+Some namespaces are created by default:
+default, kube-system, kube-public, kube-node-lease.
+
+Resources inside one namespace cannot see resources in another unless exposed.
+
+If you don’t mention a namespace, Kubernetes uses the default one.
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+explanation of Imperative vs Declarative — based on what you actually do in real clusters 👇
+
+🟦 Imperative in Kubernetes (Practical Understanding)
+
+You give Kubernetes direct commands to perform actions immediately.
+
+Practical examples:
+
+You want a pod → you run a command → pod is created.
+
+You want to delete a service → you run a command → service is removed.
+
+You want replicas = 5 → you run a command → replica count changes.
+
+🤔 What happens practically?
+
+No history
+
+No YAML
+
+You must remember all commands manually
+
+Not suitable for big apps
+
+Real commands (for understanding, not explanation):
+
+Create pod
+
+Scale deployment
+
+Delete pod
+
+These actions happen instantly when you run the command.
+
+🟩 Declarative in Kubernetes (Practical Understanding)
+
+You create a YAML file that describes your final desired state.
+
+Practical examples:
+
+You create a file that says:
+“This deployment should always have 3 pods.”
+“This service should expose port 80.”
+
+Kubernetes continuously maintains that state.
+
+If a pod is deleted, Kubernetes recreates it automatically.
+
+If someone changes something manually, Kubernetes puts it back to the desired state.
+
+🤔 What happens practically?
+
+YAML acts like documentation
+
+Version controlled (Git)
+
+Easy for teams
+
+Kubernetes self-heals according to the YAML
+
+Real usage:
+
+You apply YAML files to deploy apps
+
+You use Git to store these files
+
+You use tools like ArgoCD / Flux for GitOps
 
 
 ---------------------------------------------------------------------------------------------------------------------------
