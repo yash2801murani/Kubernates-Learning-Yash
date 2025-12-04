@@ -271,6 +271,12 @@ kubectl apply -f file name make change in the liveObjectConfiguration
 
 then it finally updated into the json file which is managed by k8s it self. 
 
+stored into the liveObjectConfiguration with in annotation with lastappliedconfiguration.json
+
 ---------------------------------------------------------------------------------------------------------------------------
 
+ When manual schuduling happens if you want that specific pod should go to specific node
+ in deployment file under metadata use nodeName : nodenameofworker to schuduling the pod of required node only. 
+ 
+---------------------------------------------------------------------------------------------------------------------------
 
