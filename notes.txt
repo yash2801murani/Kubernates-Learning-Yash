@@ -1,0 +1,29 @@
+replication controller 
+
+Replicaset - Extendent version of replication controller 
+
+
+Both are working same but Replicaset is has some more features. 
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+Que....
+
+Supose we have 3 pod working with nginx without labels and now we want Replicaset to manage this pods and ensure keep on 3
+can working continuously. 
+
+so can we need to add template pod in Replicaset yaml?? please note we have already running pods with image and all. 
+
+Ans : Yes.... Definately required bcz once pod get failed Replicaset requires pod template to initiate the new pod. 
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+kubectl scale --replicas=6  Replicaset/replicasetname
+
+
+
+
+
