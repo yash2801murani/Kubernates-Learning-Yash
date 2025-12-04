@@ -259,3 +259,18 @@ You use tools like ArgoCD / Flux for GitOps
 
 ---------------------------------------------------------------------------------------------------------------------------
 
+Kubectl apply command
+
+localfile : yaml
+liveObjectConfiguration : K8s managerd
+JSON file : k8s Managed
+
+Any change made on local file
+
+kubectl apply -f file name make change in the liveObjectConfiguration
+
+then it finally updated into the json file which is managed by k8s it self. 
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
