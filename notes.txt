@@ -24,6 +24,117 @@ Ans : Yes.... Definately required bcz once pod get failed Replicaset requires po
 kubectl scale --replicas=6  Replicaset/replicasetname
 
 
+---------------------------------------------------------------------------------------------------------------------------------------
+
+Deployments
+
+kubectl set image deployment/<deployment-name> <container-name>=<new-image>
+
+🔹 Update Deployment Image
+EG : kubectl set image deployment/nginx-deploy nginx=nginx:1.27
+
+🔹 View Rollout Status
+kubectl rollout status deployment/nginx-deploy
+
+🔹 View Rollout History
+kubectl rollout history deployment/nginx-deploy
 
 
+🔹 Rollback to Previous Version
+kubectl rollout undo deployment/nginx-deploy
+
+---------------------------------------------------------------------------------------------------------------------------------------
+
+
+Services 
+
+✅ What is a Service?
+
+A Service in Kubernetes is a permanent IP and name
+that helps other apps connect to your Pods.
+
+Pods keep changing…
+Service stays same always.
+
+🟩 Why do we need Services?
+1️⃣ Pods are not permanent
+
+Pods die, restart, new pods come → their IP changes.
+Service gives one fixed IP.
+
+2️⃣ To access the application
+
+If you want to reach your app running in pods,
+you need a service to expose it.
+
+3️⃣ Load balancing
+
+If you have multiple pods,
+Service sends traffic to all of them (round-robin load balancing).
+
+4️⃣ Communication between apps
+
+Backend → Frontend
+Frontend → Database
+Services connect them easily.
+
+5️⃣ Stable DNS name
+
+Example:
+nginx-service.default.svc.cluster.local
+
+Always same, even if pods change.
+
+🟦 Types of Services (very simple)
+1. ClusterIP (default)
+
+Works inside cluster only
+
+No external access
+
+Used for internal communication
+Example: backend communicating with database.
+
+2. NodePort
+
+Opens a port on every node
+
+You can access service using NodeIP:NodePort
+
+Used for testing / exposing to outside world
+
+3. LoadBalancer
+
+Cloud providers (AWS, GCP, Azure)
+
+Creates a real load balancer
+
+Best for production external apps
+
+4. ExternalName
+
+Maps a service name to an external URL
+Example: MySQL on another server
+
+🟩 In one line:
+
+Pods keep changing. Service gives a stable way to connect to them.
+
+
+In Depth node port
+
+
+In all the worker node same port should be open 30000-32767
+
+port : port of svc
+nodePort : Port of the actual Machine
+Targetport : port of the container where service is running 
+
+
+if i create node port service for nginx where pods are in 3 multiple worker node 
+
+means 3 worker node ip should open same nodeport port and then using any ip of worker node you can access your resource using the same nodeport number. 
+
+
+---------------------------------------------------------------------------------------------------------------------------
 
