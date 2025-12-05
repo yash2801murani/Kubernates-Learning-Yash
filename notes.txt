@@ -453,3 +453,58 @@ Daemonset
 
 Is all about create one pod and container on each worker node. it is the usecase of the Daemonset
 
+---------------------------------------------------------------------------------------------------------------------------
+
+Static pod
+
+Work only for pod not for replicaset and all. 
+
+Suppose there is no master node noKubeapi server how kubelet on worker node can create pod?
+
+well kubelet can do so how?
+
+there is def fdirectory when we install kubelet is etc/kubernates/menifest 
+
+so we can create yaml file for pod in this dir and kubelet can run that pod on that worker node (only pod no deplotment or rs)
+
+Please learn use case of this ......?
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+Priority classes. 
+
+
+EG 
+
+k8s components like apiserver etcd are the highest Priority
+then might db pod is high Priority
+then might other comes into the picture. 
+other job might have lowest priority compare to k8s components. 
+
+
+Set priority in range 
+
+-2B to 1B is the value. (For apps on cluster)
+
+Priority between 1B to 2B is for k8s component like apiserver etcd cluster or master node component. 
+
+ k get priorityclass
+
+ need to create priorityclass using yaml file first 
+ and then we can use proporty in pod deployment file as priorityClassName: under the container: component. 
+
+
+ in pod default priority value is 0
+
+  
+needs to understand suppose we have job or pod of priority with 1 and resources are full and then comes another job or pod
+with higherpriority supose 10 what about running lower priority job?
+
+
+its based on preamtionPolicy default it is set to preeemtLowerPriority means kill the lower priority job and assign resourcers
+to higher priority new jobs. 
+
+ we can set to never so it keeps run lower pirotity jobs it get executed first. 
+
+

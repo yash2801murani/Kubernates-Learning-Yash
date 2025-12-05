@@ -14,3 +14,5 @@ spec:
     image: nginx:trixie-perl
     ports:
     - containerPort: 80
+
+  priorityClassName: high-priority
