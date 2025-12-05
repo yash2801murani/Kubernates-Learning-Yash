@@ -1,13 +1,13 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 
 metadata:
-  name: nginx
+  name: dea
   labels:
     app: nginx
 
 spec:
-  replicas: 2
+  replicas: 6
   selector:
     matchLabels:
       app: nginx
@@ -18,16 +18,11 @@ spec:
         app: nginx
 
     spec:
-
       containers:
-      - name: nginxcontainers
+      - name: nginxcontainer
         image: nginx:trixie-perl
         ports:
         - containerPort: 80
-      tolerations:
-      - key: "app"
-        value: "nginx"
-        effect: "NoSchedule"
 
       nodeSelector:
         size: mid
@@ -38,5 +33,5 @@ spec:
           memory: "1Gi"
 
         limits:
-          memory: "2Gi"
           cpu: 2
+          memory: "2Gi"

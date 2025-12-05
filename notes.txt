@@ -323,3 +323,133 @@ Then pod gets permission.
 Commands:
 
 kubectl taint nodes <node-name> <key>=<value>:<effect>
+
+kubectl taint nodes node1 app=db:NoSchedule
+This means:
+
+key = app
+
+value = db
+
+effect = NoSchedule
+
+node = node1
+
+💡 Now normal pods CANNOT run on this node.
+
+
+containers:
+  - name: app
+    image: php:8.2
+  tolerations:
+  - key: "app"
+    value: "db"
+    effect: "NoSchedule"
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+Node Selectors:
+
+1st need to label the node 
+
+suppose i have 3 nodes 
+
+1= large
+2= mid 
+3 = small
+
+1st node i label as size=large
+2nd node i label as size = min
+3nd node i label as size = small
+
+then in pod or deployment file in spec we can specify the nodeSelector size=large || size=small as per requirement. 
+
+ 
+ label command for node
+
+ kubectl label node worker01 size=large
+
+
+Limitation?
+
+If i have requirement which is complex such as schule pod on node which is not small
+or schule on where node is either small or medium
+
+this is not archiveable so that we need node affinity. 
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+Node affinity
+
+Provide advance expression for selecting the node for specific pod. 
+
+Advance version of node Selectors
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+Taint, Tollarance vs Node affinity. 
+
+IMP. 
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+
+Resource Limitation
+
+CPU 
+Memory
+
+Min neeeds to add in deployment. 
+
+cpu can start from 0.1 as 100MB  
+1 cpu means 1VCPU.
+
+Memory min to 256 M or Mi or in GB as 1Gi
+
+
+ we can set limits as well for using max how much pod can use
+
+ limit also set under requests
+
+
+What if goes above the limits set?
+
+CPU : Throttles can not use more then limit
+Memory: container may use above while once go above time then go with OOM out of memory and kill the container
+
+
+what is best?
+
+
+FOR. 
+
+No Req no limit
+req set  but not limit || This might best but tottaly based on requirement. 
+no req but limit set
+req and limits  both set 
+
+
+if we didnt set? in the namespace level it is by default specified for the each pod and the container.
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+IMP command. 
+
+Create YAML from the pod
+
+kubectl get pod elephant -o yaml > elephant-pod.yaml
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+Daemonset
+
+Is all about create one pod and container on each worker node. it is the usecase of the Daemonset
+
