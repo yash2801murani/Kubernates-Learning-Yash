@@ -147,6 +147,8 @@ eg communicating between frontend and backend.
 
 allocate single ip called ClusterIP
 
+Your pod knows which service to call because YOU (the developer) give it the service name (like DB_HOST=mysql-service), and Kubernetes DNS + kube-proxy handle the routing internally.
+
 
 Load Balancer. 
 
@@ -280,3 +282,44 @@ stored into the liveObjectConfiguration with in annotation with lastappliedconfi
  
 ---------------------------------------------------------------------------------------------------------------------------
 
+Taint and tolarance
+
+
+🛡️ What is a Toleration?
+
+A toleration is given to a pod so that it can ignore the taint and still run on that node.
+
+Think of toleration as:
+
+✅ “Special Permission” badge for the pod.
+
+🎯 Simple Example
+Node:
+Node-1: has taint → No pods allowed.
+
+Pod:
+Pod wants to run.
+But pod has NO toleration.
+
+
+👉 So Kubernetes will NOT schedule the pod on Node-1.
+
+🧠 But if pod has toleration:
+
+Add:
+
+tolerations:
+- key: "team"
+  value: "db"
+  effect: "NoSchedule"
+
+
+Then pod gets permission.
+
+👉 Now Kubernetes WILL schedule it on Node-1.
+
+
+
+Commands:
+
+kubectl taint nodes <node-name> <key>=<value>:<effect>
