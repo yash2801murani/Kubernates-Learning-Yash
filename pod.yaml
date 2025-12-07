@@ -4,7 +4,7 @@ kind: Pod
 
 metadata:
   name: nginxpod
-  namespace: nginx
+  # namespace: nginx
   labels:
     app: nginx
 
@@ -15,4 +15,10 @@ spec:
     ports:
     - containerPort: 80
 
-  priorityClassName: high-priority
+    env:
+    - name: name
+      valueFrom:
+        configMapKeyRef:
+          name: cm
+          key: name
+  # priorityClassName: high-priority
