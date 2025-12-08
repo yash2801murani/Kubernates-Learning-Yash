@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: mltc
+  labels:
+    app: nginx
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+
+  template:
+    metadata:
+      labels:
+        app: nginx
+
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:trixie-perl
+        ports:
+        - containerPort: 80
+      # Multi container
+      # - name: nginx
+      #   image: nginx:trixie-perl
+      #   ports:
+      #   - containerPort: 80
+
+      # inti containers
+
+      # initContainers:
+      # - name : initcontainer
+      #   image: busbox:unstable-uclibc
+
+      # Side car container
+
+      initContainers:
+      - name: initcontainer
+        image: busbox:unstable-uclibc
+        restartPolicy: Always

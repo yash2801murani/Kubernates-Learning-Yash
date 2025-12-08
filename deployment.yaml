@@ -24,6 +24,20 @@ spec:
         image: nginx:trixie-perl
         ports:
         - containerPort: 80
+
+        env:
+        - name: name
+          valueFrom:
+            configMapKeyRef:
+              name: cm
+              key: name
+
+        - name: sc
+          valueFrom:
+            secretKeyRef:
+              name: ms
+              key: pass
+
       tolerations:
       - key: "app"
         value: "nginx"

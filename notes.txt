@@ -43,6 +43,13 @@ kubectl rollout history deployment/nginx-deploy
 🔹 Rollback to Previous Version
 kubectl rollout undo deployment/nginx-deploy
 
+
+Deployment stratagy types:
+
+1) Destroy old and create new -> Appln downtime -> called Recreate stratagy. 
+2) One by one container down and created new -> No down time -> Rolling update
+
+
 ---------------------------------------------------------------------------------------------------------------------------
 
 
@@ -509,4 +516,406 @@ to higher priority new jobs.
 
 
 ---------------------------------------------------------------------------------------------------------------------------
+
+Admission Controllers. 
+
+---------------------------------------------------------------------------------------------------------------------------
+
+Monitor cluster of the kubernates. 
+
+what to monitor?
+
+Pod level monitor. 
+
+Node level monitor.
+
+no buildIn fullfledge monitoring feature by the k8s. 
+
+
+1 matrix server as per cluster. 
+
+Does not store into the disk means no history data is present if use the matrix server. 
+
+KUBELET ON each worker node has sub component called cAdviser who gets the performance data of the pod and send to matrix server. 
+
+
+get maytrix server yaml from github and run the matrix server pod in able to see the data. 
+
+Application logs management?
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+Application lifecycle management. 
+
+Rolling back and rollBacks. | covered above
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+environment variable in k8s. 
+
+use env propery in array form. 
+
+under ports:
+
+Environment Variables in Kubernetes (Simple Notes)
+What is an Environment Variable in K8s?
+
+A small piece of information you give to your Pod/Container.
+
+The application inside the container can read it while running.
+
+Example: database name, mode=production, API URL, etc.
+
+They help you avoid writing values directly inside your application code.
+
+How to Set Environment Variables?
+
+You define them inside your Pod/Deployment YAML under the container.
+
+They can come from:
+
+Direct key-value (simple variables)
+
+ConfigMap
+
+Secret
+
+✅ ConfigMap (Simple Notes)
+What is ConfigMap?
+
+A Kubernetes object used to store non-sensitive data.
+
+Example:
+
+app name
+
+log level (debug/info)
+
+URLs
+
+any plain text config
+
+Why use ConfigMap?
+
+To keep configuration outside the container image.
+
+You can update ConfigMap without changing the application code.
+
+✅ Secret (Simple Notes)
+What is Secret?
+
+Same as ConfigMap but used for sensitive or confidential data.
+
+Example:
+
+passwords
+
+API keys
+
+database credentials
+
+tokens
+
+Why use Secret?
+
+Values are stored in base64 encoded format.
+
+Prevents directly exposing sensitive data inside YAML files.
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  APP_MODE: "production"
+  APP_VERSION: "1.0"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+type: Opaque
+data:
+  DB_PASSWORD: cGFzc3dvcmQ=   # "password" base64
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      containers:
+        - name: demo-container
+          image: nginx
+
+          env:
+            # 1️⃣ Simple env variable
+            - name: APP_NAME
+              value: "MyDemoApp"
+
+            # 2️⃣ From ConfigMap
+            - name: APP_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: APP_MODE
+
+            # 3️⃣ From Secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_PASSWORD
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+Multi container pod
+
+
+✅ 1. Multi-Container Pod (Simple Explanation)
+What it is
+
+A Pod in Kubernetes that has more than one container running inside it.
+
+Simple Meaning
+
+One Pod = one mini-computer
+Inside it → multiple containers working together.
+
+Why we use it
+
+Because sometimes one application needs helper containers.
+
+Example:
+
+One container runs your main app
+
+Another collects logs
+
+Another updates files
+
+Benefits (Interview Points)
+
+They share the same network (same IP, same port space) → fast communication
+
+They share storage (volumes)
+
+Helps in creating modular design (each container does a small job)
+
+Reduces overhead of running separate Pods
+
+Disadvantages
+
+If one container crashes, Pod may restart
+
+Harder to scale individually (you cannot scale one container alone)
+
+More complex debugging
+
+✅ 2. Co-Located Containers
+What it means (simple)
+
+Containers inside the same Pod that work together.
+
+Simplest Example
+
+Container A → main application
+
+Container B → small helper process
+Both live in the same Pod → co-located.
+
+Why use them
+
+They must share files
+
+They must communicate at localhost
+
+They depend on each other tightly
+
+Interview Point
+
+“Co-located containers means containers sharing the same Pod, which gives them shared network and storage.”
+
+✅ 3. Init Container (Simple + Interview)
+What it is
+
+A special container that runs first and completes its task, then only main containers start.
+
+Easy Meaning
+
+It “initializes” or “prepares” the environment.
+
+Real Example
+
+Before starting your app, you need to:
+
+Download configuration
+
+Check DB connectivity
+
+Create necessary folders
+
+This work is done by init container.
+
+Benefits
+
+Ensures app starts only after requirements are ready
+
+Fail-safe: if init fails → pod doesn’t start
+
+Perfect for setup tasks
+
+Disadvantages
+
+Slower Pod start, because init must finish
+
+Init cannot run alongside main containers (only sequential)
+
+Interview Point
+
+“Init containers run sequentially and prepare the Pod environment before the main containers start.”
+
+✅ 4. Sidecar Container (Simple + Interview)
+What it is
+
+A helper container that runs along with the main container to provide extra functionality.
+
+Simple Meaning
+
+Main app + helper app running together inside the same Pod.
+
+Everyday Example
+
+Main container → your application
+Sidecar → container that collects logs
+Sidecar → updates content
+Sidecar → proxy container (istio/envoy)
+
+Benefits
+
+Adds extra features without modifying main container
+
+Makes architecture cleaner
+
+Reusable helper logic
+
+Disadvantages
+
+Uses extra CPU/RAM
+
+Can cause Pod restart if sidecar fails
+
+Slightly more complex YAML
+
+Interview Point
+
+“A sidecar container works alongside the main container providing supportive functions such as logging, syncing, or proxying.”
+
+⭐ One Simple Combined Example (Easy to Understand)
+
+Imagine you have a Pod for a Website:
+
+Main container
+
+Runs the website
+
+Init container
+
+Downloads website content before main app starts
+
+Sidecar container
+
+Continuously collects logs and sends to monitoring system
+
+This is a multi-container Pod with:
+
+One main container
+
+One init container
+
+One sidecar container
+
+All are co-located because they are inside the same Pod.
+
+🔥 Interview Questions You Can Expect
+1. What is a multi-container Pod?
+
+A Pod with more than one container that work together using shared network and storage.
+
+2. Why use multi-container Pods?
+
+To split responsibilities and use helper containers like logging, monitoring, file sync, etc.
+
+3. What is an init container?
+
+A container that runs before app containers to prepare the environment.
+
+4. Why do we need init containers?
+
+To ensure the Pod only starts when the system is ready (config files, DB check, etc.).
+
+5. What is a sidecar container?
+
+A helper container running alongside the main container to add extra features.
+
+6. Difference between init and sidecar?
+
+Init → runs once before main app
+
+Sidecar → runs continuously with main app
+
+7. Why are containers called co-located?
+
+Because they live in the same Pod and share network & storage.
+
+
+Co located VS side Container
+
+in co located no option to select which container run first however in side car the sidecar container we have start side container before main
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+AutoScaline
+
+Vertical scaline VS horizontal scaline
+
+Add resources VS Adding more servers. 
+
+
+horizontal Scale
+
+Kubectl create autoscale deployment nginx --cpu-percentage=60 --min=1 --max=10
+
+
+Vertical scale
+
+Need to write YAML no itractive way. 
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+Inplace pod resizing. 
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
 
