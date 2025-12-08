@@ -977,3 +977,477 @@ drain → remove all pods + stop new pods
 
 
 ---------------------------------------------------------------------------------------------------------------------------
+
+kubernates Releases
+
+
+X.Y.Z
+
+
+X is major verison | 
+
+Y is minor version | Almost months. 
+
+Z is patch. 
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+Cluster upgrade process
+
+
+ALl components of kubenates have diffrent version. 
+
+Makesure api server should have the highest version no component version should be greater then the API server version 
+
+all versions component <= API SERVER. 
+
+Suppose 
+
+APi server V is X then.  
+
+controller manager and Kube schuduler should be X-1 verison. 
+
+and kubelet and kubeproxy should be X-2 verison. 
+
+
+IMP : only last 3 versions are supported by k8S last 3 versions only
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+Backup and restore methodologies. 
+
+All things stored into ETCD and if Volume is there then Volumes as well. 
+
+Get yaml files for backup. 
+
+kubectl get all --all-namespace -o yaml > all-deploy-services.yaml
+
+
+We can get from ETCD as well. 
+
+etcd.service -> Get location where the data is stored.  
+
+or run snapshot command. 
+
+etcdtl snapshot save snapshot.db
+
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+
+Security. 
+
+Authantication in k8s cluster. 
+
+First user request directly reach to api server via the API call or kubectl service. 
+
+How api server authanticate the user request?
+Static token file
+certificate 
+Third party like kerberus. 
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+Storage in k8s. 
+
+Storage in docker containers. 
+
+Storage drivers. 
+Volume drivers. 
+
+docker create folder in system. docker sotres all info here in this file. 
+/var/lib/docker
+
+Containers, images, volumes ,aufs this are the folders under it. 
+
+
+docker run --mount type=bind, source =VMsLocation, target=StorageLocofContainer Container_name
+
+or
+
+docker run -v host_path : container_path Container_name
+
+
+who is responsible for doing this is the only docker storage drivers. 
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+CSI - container storage interface 
+
+allow k8s to work with some cloud storage interface it is a driver to connect with storage. 
+
+---------------------------------------------------------------------------------------------------------------------------
+
+Volumes in k8s. 
+
+🟩 PART 1 — SIMPLE EXPLANATION (FOR MEMORY)
+✅ What is a Volume?
+
+A Volume in Kubernetes is storage attached to a Pod so that containers can:
+
+Store data safely
+
+Share data with each other
+
+Not lose data when the container restarts
+
+Container restarts → data gone
+But
+Volume → data stays
+
+✅ Why Volumes Are Needed?
+
+Containers are temporary (data is lost on restart)
+
+You need to store logs, cache, files
+
+Multiple containers inside 1 Pod must share files
+
+Databases need permanent storage
+
+🌟 Basic Idea:
+
+Think of a Pod like a hotel room; containers are guests.
+A Volume is a locker in the room.
+Even if guests leave and come back → locker stays.
+
+🟦 PART 2 — TYPES OF VOLUMES (Simple)
+1️⃣ emptyDir
+
+Created when Pod starts
+
+Deleted when Pod stops
+
+Used for temp data, caching, log sharing
+→ Not permanent
+
+2️⃣ hostPath
+
+Uses a folder on the Node’s filesystem
+
+If Pod moves to another node → data not there
+→ Node-specific data only
+
+3️⃣ PersistentVolume (PV)
+
+Storage in the cluster
+
+Independent from Pods
+→ Doesn’t get deleted when Pod is deleted
+
+4️⃣ PersistentVolumeClaim (PVC)
+
+Request for storage made by the user
+
+Pod mounts PVC → PVC binds to PV
+
+Example:
+PVC = “I need 5Gi storage.”
+PV = “Here is a 5Gi disk.”
+
+5️⃣ ConfigMap & Secret as Volumes
+
+Store configuration files or sensitive data
+
+Mounted as files into Pod
+
+6️⃣ Projected Volume
+
+Combine multiple sources (secret + configmap + serviceaccount token) into one
+
+7️⃣ cloud provider volumes (GCP, AWS, Azure)
+
+EBS (AWS), Persistent Disk (GCP), Disk (Azure)
+
+Permanent, reliable storage
+
+🟥 PART 3 — IN-DEPTH FULL EXPLANATION
+🔥 Why containers need volumes?
+
+Containers store data inside their container filesystem, which is:
+
+ephemeral (temporary)
+
+destroyed on restart
+
+destroyed when container image updates
+
+But most apps need persistent or shared storage:
+
+MySQL → cannot lose database
+
+Nginx + Sidecar updater → need shared folder
+
+Logging container → consumes logs from shared volume
+
+Hence Volumes → Pod-level storage
+And Persistent Volumes → cluster-level storage.
+
+📌 How Kubernetes Volumes Actually Work
+
+A volume lives as long as the Pod lives, not as long as the container lives.
+
+Inside a Pod:
+
+Many containers
+
+Each container mounts the same volume
+
+They read/write from shared location
+
+Example:
+
+Pod
+ ├── Container A
+ ├── Container B
+ └── Volume (shared)
+
+
+If A writes a file → B can see it.
+
+🧱 Volume Lifecycle
+📌 Volume lifecycle:
+
+Created when Pod is scheduled
+
+Mounted into containers
+
+Deleted when Pod is deleted (except PV)
+
+📌 Persistent Volume lifecycle:
+
+Created independently from Pods
+
+Survives Pod deletion
+
+Can be re-attached to new Pods
+
+🔷 PART 4 — EACH VOLUME TYPE IN DEPTH
+1️⃣ emptyDir — Pod-level temporary storage
+
+Created when Pod starts
+
+Exists until Pod is deleted
+
+If container restarts → data remains
+
+If Pod restarts (rescheduled) → data lost
+
+Perfect for:
+
+Caching
+
+Temporary files
+
+Sharing logs between sidecar + main container
+
+2️⃣ hostPath — Node-level storage
+
+Maps a node directory inside the Pod.
+
+Example:
+
+/var/log → mounted into Pod
+
+
+❗ Problems:
+
+Not portable (Pod must run on same node)
+
+Dangerous (can give container root access to node filesystem)
+
+Use cases:
+
+Kubelet logs
+
+Monitoring agents
+
+3️⃣ Persistent Volume (PV)
+
+PV = actual storage (disk)
+Examples:
+
+AWS EBS
+
+GCP PD
+
+NFS
+
+Ceph
+
+iSCSI
+
+PV has:
+
+capacity
+
+access modes
+
+reclaim policy
+
+4️⃣ PersistentVolumeClaim (PVC)
+
+App requests storage using PVC.
+
+Example:
+
+I want 10Gi storage
+with ReadWriteOnce
+
+
+Scheduler finds appropriate PV → binds it.
+
+Pod mounts PVC → gets permanent storage.
+
+5️⃣ ConfigMap & Secret as Volumes
+
+ConfigMap → non-sensitive data
+Secret → sensitive data (API keys, passwords)
+
+Mounted as:
+
+files
+
+folders
+
+environment variables
+
+6️⃣ Projected Volume
+
+Combines:
+
+Secrets
+
+ConfigMaps
+
+Downward API
+
+ServiceAccount token
+
+All into a single directory.
+
+7️⃣ Cloud Volumes
+
+These are actual disks managed by cloud providers.
+
+Examples:
+
+AWS → EBS
+
+GCP → PersistentDisk
+
+Azure → ManagedDisk
+
+These support:
+
+Detach
+
+Reattach
+
+Snapshots
+
+Backups
+
+Used for production databases.
+
+🟨 PART 5 — REAL-WORLD EXAMPLES
+⭐ Example 1 — emptyDir (Sidecar + Main Container)
+volumes:
+- name: cache
+  emptyDir: {}
+
+containers:
+- name: web
+  image: nginx
+  volumeMounts:
+  - mountPath: /cache
+    name: cache
+
+- name: logger
+  image: busybox
+  volumeMounts:
+  - mountPath: /cache
+    name: cache
+
+
+Both containers share /cache.
+
+⭐ Example 2 — Persistent Volume + PVC (Database)
+
+User creates PVC:
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+
+Database Pod mounts it:
+
+volumeMounts:
+- mountPath: /var/lib/mysql
+  name: mydata
+
+
+This storage survives pod deletion.
+
+⭐ Example 3 — ConfigMap volume
+volumes:
+- name: config
+  configMap:
+    name: app-config
+
+volumeMounts:
+- name: config
+  mountPath: /etc/config
+
+
+Places config files inside container.
+
+🟩 Access Modes (Important in interviews)
+Mode	Meaning
+ReadWriteOnce (RWO)	Only 1 node can mount
+ReadOnlyMany (ROX)	Many nodes can read
+ReadWriteMany (RWX)	Many nodes can read/write
+🧩 StorageClass (Dynamic Provisioning)
+
+Without StorageClass:
+
+PV must be created manually
+
+With StorageClass:
+
+PV is created automatically when PVC is created
+
+Example:
+
+storageClassName: gp2
+
+
+Then AWS creates an EBS automatically.
+
+🟧 PART 6 — SUPER SIMPLE SUMMARY
+Type	What it does	Use case
+emptyDir	Temporary	Cache, logs
+hostPath	Node folder	Monitoring
+PV + PVC	Permanent	Databases
+ConfigMap Volume	Config files	App settings
+Secret Volume	Sensitive files	Passwords
+Projected	Combine sources	Complex config
+cloud disks	Real permanent storage	Production
