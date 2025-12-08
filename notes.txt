@@ -918,4 +918,62 @@ Inplace pod resizing.
 ---------------------------------------------------------------------------------------------------------------------------
 
 
+Drain, uncorden and corden command 
 
+✅ 1. Cordon
+
+Simple meaning:
+👉 Stop new pods from going to this node.
+
+Existing pods keep running.
+
+Command:
+
+kubectl cordon worker-node1
+
+
+Example situation:
+You want to do maintenance on worker-node1, so you don’t want new pods to go there.
+
+✅ 2. Uncordon
+
+Simple meaning:
+👉 Allow new pods to get scheduled on this node again.
+
+Command:
+
+kubectl uncordon worker-node1
+
+
+Example situation:
+Maintenance is done; now pods can be scheduled again.
+
+✅ 3. Drain
+
+Simple meaning:
+👉 Move all pods out of the node safely
+and
+👉 Stop new pods from coming to this node.
+
+Drain = evict pods + cordon the node
+
+Command:
+
+kubectl drain worker-node1 --ignore-daemonsets --force --delete-emptydir-data
+
+
+Example situation:
+You want to reboot the node or upgrade OS →
+so you drain the node to empty it.
+
+⭐ Super Simple Summary
+
+cordon → stop new pods
+
+uncordon → allow new pods
+
+drain → remove all pods + stop new pods
+
+
+
+---------------------------------------------------------------------------------------------------------------------------
