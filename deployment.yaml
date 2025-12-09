@@ -1,6 +1,5 @@
 apiVersion: apps/v1
 kind: Deployment
-
 metadata:
   name: nginx
   labels:
@@ -18,7 +17,6 @@ spec:
         app: nginx
 
     spec:
-
       containers:
       - name: nginxcontainers
         image: nginx:trixie-perl
@@ -37,6 +35,10 @@ spec:
             secretKeyRef:
               name: ms
               key: pass
+        # 🔥 PVC MOUNT HERE
+        volumeMounts:
+        - name: nginx-storage
+          mountPath: /usr/share/nginx/html # you can change path
 
       tolerations:
       - key: "app"
@@ -48,9 +50,15 @@ spec:
 
       resources:
         requests:
-          cpu: 1
+          cpu: "1"
           memory: "1Gi"
 
         limits:
+          cpu: "2"
           memory: "2Gi"
-          cpu: 2
+
+      # 🔥 VOLUME SECTION (PVC USED HERE)
+      volumes:
+      - name: nginx-storage
+        persistentVolumeClaim:
+          claimName: my-pvc # your PVC name
