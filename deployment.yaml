@@ -35,7 +35,7 @@ spec:
             secretKeyRef:
               name: ms
               key: pass
-        # 🔥 PVC MOUNT HERE
+        # PVC MOUNT HERE
         volumeMounts:
         - name: nginx-storage
           mountPath: /usr/share/nginx/html # you can change path
@@ -57,7 +57,7 @@ spec:
           cpu: "2"
           memory: "2Gi"
 
-      # 🔥 VOLUME SECTION (PVC USED HERE)
+      # VOLUME SECTION (PVC USED HERE)
       volumes:
       - name: nginx-storage
         persistentVolumeClaim:
