@@ -386,6 +386,7 @@ this is not archiveable so that we need node affinity.
 
 
 ---------------------------------------------------------------------------------------------------------------------------
+This needs to be done in depth later on. 
 
 Node affinity
 
@@ -463,7 +464,7 @@ Is all about create one pod and container on each worker node. it is the usecase
 
 Static pod
 
-Work only for pod not for replicaset and all. 
+Work only for pod not for replicaset and deployment or daemonset and all. 
 
 Suppose there is no master node noKubeapi server how kubelet on worker node can create pod?
 

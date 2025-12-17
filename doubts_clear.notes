@@ -1,0 +1,179 @@
+All about services and Deployment Daemon replicaset
+
+
+1️⃣ StatefulSet – Volumes doubt
+❓ Does StatefulSet always need volumes?
+
+❌ NO
+
+✅ Correct points
+
+StatefulSet = identity
+
+Volume = optional
+
+Used mostly with volumes in real life
+
+🧠 Remember
+
+Identity → mandatory
+
+Storage → optional but common
+
+👉 Interview line:
+
+StatefulSet does not require volumes, but is commonly used with persistent storage.
+
+2️⃣ DaemonSet – Multiple pods per node?
+❓ Can DaemonSet run 2 pods per node?
+
+❌ NO
+
+✅ Correct points
+
+DaemonSet = 1 Pod per node
+
+No replicas field
+
+Node-based, not count-based
+
+🧠 To run more pods per node:
+
+Use Deployment
+
+Or multiple DaemonSets (rare)
+
+👉 Interview line:
+
+DaemonSet ensures exactly one Pod per node.
+
+3️⃣ Nginx default web path
+✅ Default path
+/usr/share/nginx/html
+
+🧠 Context
+
+Same in Docker
+
+Same in Kubernetes
+
+PV mounted here = data persists
+
+👉 Interview line:
+
+Nginx default document root is /usr/share/nginx/html.
+
+4️⃣ Service – Why needed?
+❓ Why Service?
+
+Pod IPs change
+
+Service gives:
+
+Stable IP
+
+DNS
+
+Load balancing
+
+🧠 Flow
+Client → Service → Pod
+
+5️⃣ Service Types – ONE-LINE EACH
+Type	Use
+ClusterIP	Internal only (default)
+NodePort	Expose via node IP + port
+LoadBalancer	Cloud external access
+ExternalName	Map to external DNS
+Headless	Direct Pod DNS (StatefulSet)
+6️⃣ LoadBalancer – Key points
+
+Exposes ONE service
+
+Creates one cloud LB
+
+No path/host routing
+
+L4 (TCP/UDP)
+
+👉 Flow:
+
+User → LB → NodePort → Pod
+
+7️⃣ Ingress – Key points
+
+Exposes MULTIPLE services
+
+Uses ONE LoadBalancer
+
+Works on HTTP/HTTPS
+
+L7 (host/path based)
+
+👉 Flow:
+
+User → LB → Ingress Controller → Service → Pod
+
+8️⃣ BIG DOUBT CLARIFIED (IMPORTANT)
+❌ Wrong thinking
+
+Ingress routes based on NodePort (32000 / 32001)
+
+✅ Correct thinking
+
+Ingress listens on 80 / 443
+
+Routes by:
+
+Path
+
+Host
+
+NodePorts are not used by users
+
+9️⃣ PHP + NodeJS with Ingress (CORRECT SETUP)
+✅ Do I need Services?
+
+✔ YES — ALWAYS
+
+Ingress routes to Services, not Pods.
+
+✅ Service type?
+
+✔ Both services should be ClusterIP
+
+Example
+/php   → php-service (ClusterIP)
+/node  → node-service (ClusterIP)
+
+🔟 FINAL GOLDEN RULES (MEMORIZE)
+
+Ingress → Service → Pod
+
+Ingress ❌ never talks directly to Pods
+
+Ingress ❌ does NOT route by port
+
+Backend services for Ingress = ClusterIP
+
+LoadBalancer = one service
+
+Ingress = many services, one LB
+
+🧠 5 One-Line Interview Answers (SUPER IMPORTANT)
+
+Ingress needs Services to route traffic
+
+ClusterIP is best with Ingress
+
+Ingress works on L7 (host/path)
+
+LoadBalancer works on L4 (port-based)
+
+DaemonSet = one Pod per node
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+
