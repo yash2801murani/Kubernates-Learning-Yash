@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: nginx
+  name: nginxdeployment
   labels:
     app: nginx
 
@@ -19,7 +19,20 @@ spec:
 
     spec:
       containers:
-      - name: nignx
+      - name: nginc
         image: nginx:trixie-perl
         ports:
         - containerPort: 80
+
+        env:
+        - name: name
+          value: "yash"
+
+      resources:
+        requests:
+          cpu: "2"
+          memory: "1Gi"
+
+        limits:
+          cpu: "2"
+          memory: "1Gi"
